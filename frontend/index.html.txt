@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Smart Timetable Management System for Government Engineering College Madhubani"
+    >
+
+    <title>Intelligent Timetable Management Syatem</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+.developer-name {
+    color: red !important;
+    font-weight: 900 !important;
+}
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0f3d91, #1769d1);
+            color: white;
+            padding: 22px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+.college-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.college-logo {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    background: white;
+    border-radius: 8px;
+    padding: 3px;
+}
+        .college-name {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .system-name {
+            font-size: 14px;
+            margin-top: 6px;
+            opacity: 0.9;
+        }
+
+        .status {
+            background: #16a34a;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        /* Main */
+        .container {
+            padding: 30px;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 20px;
+        }
+
+        .title h1 {
+            font-size: 28px;
+            color: #111827;
+        }
+
+        .title p {
+            margin-top: 7px;
+            color: #6b7280;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        select,
+        button {
+            padding: 11px 15px;
+            border-radius: 7px;
+            border: 1px solid #d1d5db;
+            background: white;
+            font-size: 14px;
+        }
+
+        button {
+            background: #1769d1;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #0f3d91;
+        }
+
+        /* Statistics */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            border-left: 5px solid #1769d1;
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .stat-card p {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 8px;
+            color: #1769d1;
+        }
+
+        /* Timetable */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow-x: auto;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th {
+            background: #0f3d91;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .subject {
+            color: #1769d1;
+            font-weight: bold;
+        }
+
+        .room {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 5px 9px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        /* Mobile */
+        @media (max-width: 800px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .top-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .container {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+    <div class="college-header">
+
+        <img
+            src="college-logo.jpg"
+            alt="Government Engineering College Madhubani Logo"
+            class="college-logo"
+        >
+
+        <div>
+            <div class="college-name">
+                Government Engineering College Madhubani
+            </div>
+
+            <div class="system-name">
+                Smart Timetable Management System
+            </div>
+        </div>
+
+    </div>
+
+        <div class="status">
+            ● System Online
+        </div>
+    </header>
+
+
+    <!-- Main Dashboard -->
+    <main class="container">
+
+        <div class="top-section">
+
+            <div class="title">
+                <h1>⚡ Intelligent Timetable Management System<h1>
+            
+            </div>
+
+            <div class="controls">
+
+                <select id="branch" onchange="updateSectionVisibility()">
+    <option value="Electrical">Electrical Engineering</option>
+    <option value="CSE">Computer Science & Engineering</option>
+    <option value="IoT">Internet of Things</option>
+    <option value="Mechanical">Mechanical Engineering</option>
+    <option value="Civil">Civil Engineering</option>
+</select>
+
+<select id="section" style="display: none;">
+    <option value="A">Section A</option>
+    <option value="B">Section B</option>
+</select>
+
+<select id="semester">
+    <option value="4">Semester 4</option>
+    <option value="5">Semester 5</option>
+    <option value="3">Semester 3</option>
+</select>
+
+                <button onclick="loadTimetable()">
+                    🔄 Refresh
+                </button>
+
+                <button onclick="generateTimetable()">
+                    ⚡ Auto Generate
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- Faculty Leave & Substitute -->
+        <section class="leave-section">
+
+            <div class="section-header">
+                <h2>👨‍🏫 Faculty Leave & Substitute</h2>
+                <p>Manage faculty leave and find available substitute faculty.</p>
+            </div>
+
+            <div class="leave-form">
+
+                <label for="leaveFaculty">
+                    Faculty
+                </label>
+
+                <select id="leaveFaculty">
+                    <option value="">Select Faculty</option>
+                    <option value="6ab9f2cfb5844f8bff205aba">
+                        Ravi Kumar
+                    </option>
+                </select>
+
+                <label for="leaveTimeSlot">
+                    Time Slot
+                </label>
+
+                <select id="leaveTimeSlot">
+                    <option value="6ab7820a747bdd0e0018c63b">
+                        Monday - 2nd Period
+                    </option>
+                </select>
+
+                <label for="leaveDate">
+                    Leave Date
+                </label>
+
+                <input
+                    type="date"
+                    id="leaveDate"
+                >
+
+                <button onclick="checkLeaveRequest()">
+                    🔍 Check Substitute
+                </button>
+
+            </div>
+
+            <div id="substituteResults"></div>
+
+        </section>
+        <!-- Statistics -->
+        <section class="stats">
+
+            <div class="stat-card">
+                <h3>Total Classes</h3>
+                <p id="totalClasses">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Faculty Assigned</h3>
+                <p id="facultyCount">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Rooms Used</h3>
+                <p id="roomCount">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Time Slots</h3>
+                <p id="slotCount">0</p>
+            </div>
+
+        </section>
+
+
+        <!-- Timetable -->
+        <section class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Day & Slot</th>
+                        <th>Subject</th>
+                        <th>Branch</th>
+                        <th>Semester</th>
+                        <th>Faculty</th>
+                        <th>Room</th>
+                    </tr>
+                </thead>
+
+                <tbody id="timetableBody">
+
+                    <tr>
+                        <td colspan="6" class="loading">
+                            Loading timetable...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+    Government Engineering College Madhubani © 2026 |
+    Smart Timetable Management System
+    <br>
+    <small>Web Developed by <span class="developer-name">Yash Kumar Jha , Aman Kumar , Mannu Kumar , Nishant Kumar</span></small>
+</footer>
+
+
+    <script>
+
+        const API_URL = "http://localhost:5000/api/timetable";
+function updateSectionVisibility() {
+
+    const branch = document.getElementById('branch').value;
+    const section = document.getElementById('section');
+
+    if (branch === 'Civil') {
+        section.style.display = 'block';
+    } else {
+        section.style.display = 'none';
+    }
+}
+
+
+        // Load timetable from backend
+        async function loadTimetable() {
+
+            const tableBody = document.getElementById("timetableBody");
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="loading">
+                        Loading timetable...
+                    </td>
+                </tr>
+            `;
+
+            try {
+
+                const response = await fetch(`${API_URL}?branch=${encodeURIComponent(document.getElementById("branch").value)}&section=${encodeURIComponent(document.getElementById("section").value)}&semester=${encodeURIComponent(document.getElementById("semester").value)}`);
+
+                if (!response.ok) {
+                    throw new Error("Server response error");
+                }
+
+                const data = await response.json();
+
+                displayTimetable(data);
+
+            } catch (error) {
+
+                console.error(error);
+
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="loading">
+                            ⚠️ Unable to connect to backend.
+                            <br><br>
+                            Make sure the backend server is running on port 5000.
+                        </td>
+                    </tr>
+                `;
+
+            }
+
+        }
+
+
+        // Display timetable
+        function displayTimetable(data) {
+
+            const tableBody = document.getElementById("timetableBody");
+
+            document.getElementById("totalClasses").textContent = data.length;
+
+            const faculties = new Set();
+            const rooms = new Set();
+            const slots = new Set();
+
+            if (data.length === 0) {
+
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="loading">
+                            No timetable data available.
+                            <br><br>
+                            Click <b>⚡ Auto Generate</b> after the backend
+                            generation API is ready.
+                        </td>
+                    </tr>
+                `;
+
+            } else {
+
+                tableBody.innerHTML = "";
+
+                data.forEach(item => {
+
+                    if (
+    item.facultyId?.name &&
+    item.branch === document.getElementById("branch").value
+) {
+    faculties.add(item.facultyId.name);
+}
+
+                    if (item.roomId?.roomNo) {
+                        rooms.add(item.roomId.roomNo);
+                    }
+
+                    if (item.timeSlotId) {
+                        slots.add(item.timeSlotId._id || item.timeSlotId);
+                    }
+
+                    const row = document.createElement("tr");
+
+                    const slotTimes = {
+    1: "10:00 AM – 11:00 AM",
+    2: "11:00 AM – 12:00 PM",
+    3: "12:00 PM – 1:00 PM",
+    4: "2:00 PM – 3:00 PM",
+    5: "3:00 PM – 4:00 PM",
+    6: "4:00 PM – 5:00 PM"
+};
+
+const slotNumber = item.timeSlotId?.slotNumber;
+
+row.innerHTML = `
+    <td>
+        <strong>${item.timeSlotId?.day || "N/A"}</strong>
+        <br>
+        Slot ${slotNumber || "N/A"}
+        <br>
+        <small>${slotTimes[slotNumber] || ""}</small>
+    </td>
+
+                        <td class="subject">
+                            ${item.subjectName || "N/A"}
+                        </td>
+
+                        <td>
+                            ${item.branch || "N/A"}
+                        </td>
+
+                        <td>
+                            ${item.semester || "N/A"}
+                        </td>
+
+                        <td>
+                            ${item.facultyId?.name || "Unassigned"}
+                        </td>
+
+                        <td>
+                            <span class="room">
+                                ${item.roomId?.roomNo || "TBD"}
+                            </span>
+                        </td>
+                    `;
+
+                    tableBody.appendChild(row);
+
+                });
+
+            }
+
+            document.getElementById("facultyCount").textContent =
+                faculties.size;
+
+            document.getElementById("roomCount").textContent =
+                rooms.size;
+
+            document.getElementById("slotCount").textContent =
+                slots.size;
+
+        }
+
+
+        // Auto generate timetable
+        async function generateTimetable() {
+
+            const button = event.target;
+
+            button.disabled = true;
+            button.textContent = "Generating...";
+
+            try {
+
+                const response = await fetch(API_URL + "/generate", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+    branch: document.getElementById("branch").value,
+    section: document.getElementById("section").value,
+    semester: Number(
+        document.getElementById("semester").value
+    )
+})
+
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || result.message);
+                }
+
+                alert("Timetable generated successfully!");
+
+                loadTimetable();
+
+            } catch (error) {
+
+                alert(
+                    "Generation API is not ready yet.\n\n" +
+                    error.message
+                );
+
+            }
+
+            button.disabled = false;
+            button.textContent = "⚡ Auto Generate";
+
+        }
+
+
+        // Load timetable when page opens
+        loadTimetable();
+// Check faculty leave and find substitute
+async function checkLeaveRequest() {
+
+    const facultyId =
+        document.getElementById("leaveFaculty").value;
+
+    const timeSlotId =
+        document.getElementById("leaveTimeSlot").value;
+
+    const leaveDate =
+        document.getElementById("leaveDate").value;
+
+    const resultBox =
+        document.getElementById("substituteResults");
+
+    if (!facultyId || !timeSlotId || !leaveDate) {
+        resultBox.innerHTML =
+            "<p style='color:red;'>Please select faculty, time slot and leave date.</p>";
+        return;
+    }
+
+    resultBox.innerHTML =
+        "<p>🔄 Checking available substitutes...</p>";
+
+    try {
+
+        const response = await fetch(
+            API_URL + "/leave-request",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    facultyId: facultyId,
+                    timeSlotId: timeSlotId,
+                    leaveDate: leaveDate
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                result.message || result.error
+            );
+        }
+
+        let html = `
+            <h3>Available Substitute Faculty</h3>
+            <p>
+                <strong>Subject:</strong>
+                ${result.subjectName}
+            </p>
+        `;
+
+        result.substituteOptions.forEach(function (faculty) {
+
+            html += `
+                <div style="
+                    padding:10px;
+                    margin:8px 0;
+                    border:1px solid #ccc;
+                    border-radius:8px;
+                ">
+                    👨‍🏫 <strong>${faculty.name}</strong>
+                    <br>
+                    <small>${faculty.type}</small>
+                </div>
+            `;
+
+        });
+
+        resultBox.innerHTML = html;
+
+    } catch (error) {
+
+        resultBox.innerHTML = `
+            <p style="color:red;">
+                ❌ ${error.message}
+            </p>
+        `;
+    }
+}
+    </script>
+
+</body>
+</html>
