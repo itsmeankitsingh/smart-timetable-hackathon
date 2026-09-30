@@ -4,6 +4,7 @@ const router = express.Router();
 const Timetable = require('../models/Timetable');
 const Faculty = require('../models/Faculty');
 const SwapRequest = require('../models/SwapRequest');
+const TimeSlot = require('../models/TimeSlot');
 
 // Faculty Leave Request & Auto-Substitute
 router.post('/leave-request', async (req, res) => {
@@ -20,6 +21,18 @@ router.post('/leave-request', async (req, res) => {
             });
         }
 
+        // 1.5 Parse timeSlotId (e.g. "Thursday-1") to find the actual TimeSlot
+        let realTimeSlotId = timeSlotId;
+        if (typeof timeSlotId === 'string' && timeSlotId.includes('-')) {
+            const [day, slotNumber] = timeSlotId.split('-');
+            const actualTimeSlot = await TimeSlot.findOne({ day, slotNumber: Number(slotNumber) });
+            if (actualTimeSlot) {
+                realTimeSlotId = actualTimeSlot._id;
+            } else {
+                return res.status(404).json({ message: `Time slot ${timeSlotId} not found in database.` });
+            }
+        }
+
         // 2. Find the faculty member who is taking leave
         const leavingFaculty = await Faculty.findById(facultyId);
 
@@ -32,7 +45,7 @@ router.post('/leave-request', async (req, res) => {
         // 3. Find classes assigned to this faculty in the selected time slot
         const affectedClasses = await Timetable.find({
             facultyId: facultyId,
-            timeSlotId: timeSlotId
+            timeSlotId: realTimeSlotId
         });
 
         // 4. If faculty has no class in this slot
@@ -47,7 +60,7 @@ router.post('/leave-request', async (req, res) => {
 
         // 6. Find faculty already busy in this time slot
         const busyFacultyIds = await Timetable
-            .find({ timeSlotId: timeSlotId })
+            .find({ timeSlotId: realTimeSlotId })
             .distinct('facultyId');
 
         // 7. Find suitable substitute faculty
@@ -89,13 +102,18 @@ router.post('/leave-request', async (req, res) => {
             });
         }
 
-        // 10. Create swap request
+        // 10. Create swap request and update timetable immediately
         const swapInvite = await SwapRequest.create({
             originalFacultyId: facultyId,
             substituteFacultyId: bestSubstitute._id,
             timetableId: affectedClasses[0]._id,
-            status: 'PENDING'
+            status: 'ACCEPTED', // Auto-approve for hackathon demo
+            leaveDate: effectiveDate
         });
+
+        // Actually swap the faculty in the timetable
+        affectedClasses[0].facultyId = bestSubstitute._id;
+        await affectedClasses[0].save();
 
         // 11. Send response to frontend
         res.status(200).json({

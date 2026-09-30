@@ -38,6 +38,32 @@ router.get('/', async (req, res) => {
 
 
 // =====================================================
+// 1.5 GET DASHBOARD STATISTICS
+// =====================================================
+router.get('/stats', async (req, res) => {
+    try {
+        const filter = {};
+        if (req.query.branch) filter.branch = req.query.branch;
+        if (req.query.semester) filter.semester = req.query.semester;
+        
+        const totalClasses = await Timetable.countDocuments(filter);
+        
+        const facultyCount = await Timetable.distinct('facultyId', filter).then(arr => arr.length);
+        const roomCount = await Timetable.distinct('roomId', filter).then(arr => arr.length);
+        const slotCount = await Timetable.distinct('timeSlotId', filter).then(arr => arr.length);
+
+        res.status(200).json({
+            totalClasses,
+            facultyCount,
+            roomCount,
+            slotCount
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// =====================================================
 // 2. AUTO GENERATE TIMETABLE
 // =====================================================
 

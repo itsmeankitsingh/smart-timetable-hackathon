@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Intelligent Timetable Management System for Government Engineering College Madhubani">
+    <title>Intelligent Timetable Management System</title>
+
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1; /* Vibrant Indigo */
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899; /* Vibrant Pink */
+            --background: #f0f4f8;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-main: #0f172a;
+            --text-light: #64748b;
+            --success: #10b981;
+            --danger: #f43f5e;
+            --border: rgba(226, 232, 240, 0.8);
+            
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-2: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+            --gradient-3: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+            --gradient-4: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 10% 10%, hsla(238,100%,75%,0.3) 0px, transparent 50%),
+                radial-gradient(at 90% 10%, hsla(330,100%,75%,0.3) 0px, transparent 50%),
+                radial-gradient(at 50% 90%, hsla(180,100%,75%,0.3) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 1.2rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .college-header {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .college-logo {
+            width: 55px;
+            height: 55px;
+            object-fit: contain;
+            border-radius: 14px;
+            box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .college-logo:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+
+        .college-name {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+
+        .system-name {
+            font-size: 0.95rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 600;
+        }
+
+        .status {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 0.6rem 1.2rem;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.1);
+        }
+
+        .status::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 12px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Main Container */
+        .container {
+            padding: 2.5rem;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2.5rem;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .title h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.03em;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .title p {
+            color: var(--text-light);
+            margin-top: 0.25rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        select, input[type="date"], input[type="text"] {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            border: 2px solid var(--border);
+            background-color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-main);
+            outline: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 1rem top 50%;
+            background-size: 0.65rem auto;
+            padding-right: 2.5rem;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+            transform: translateY(-1px);
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 8px 15px rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-main);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-danger {
+            background: var(--gradient-2);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            box-shadow: 0 8px 15px rgba(236, 72, 153, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Premium 2D Timetable UI */
+        .timetable-premium {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            background: white;
+            font-size: 14px;
+        }
+
+        .timetable-premium th {
+            padding: 16px 12px;
+            background: #f8fafc;
+            color: var(--text-main);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #e2e8f0;
+            border-right: 1px solid #f1f5f9;
+        }
+
+        .timetable-premium td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+            border-right: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+        }
+        
+        .timetable-premium tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .timetable-premium tbody td:last-child,
+        .timetable-premium thead th:last-child {
+            border-right: none;
+        }
+
+        .timetable-premium tbody tr:hover td {
+            background-color: #f8fafc !important; /* light hover */
+        }
+        
+        .timetable-premium td.day-cell {
+            background: var(--gradient-1) !important;
+            color: white;
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-right: 2px solid #e2e8f0;
+        }
+        
+        .timetable-premium td.recess-cell {
+            background: #fffbeb !important;
+            color: #b45309;
+            font-weight: 900;
+            font-size: 1.25rem;
+            letter-spacing: 0.2em;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+            border-left: 2px solid #fde68a;
+            border-right: 2px solid #fde68a;
+        }
+
+        .subject-cell {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
+            border-radius: 8px;
+            min-height: 80px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        
+        .subject-cell:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .sub-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            margin-top: 4px;
+            box-shadow: 0 2px 4px rgba(99,102,241,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Leave Section */
+        .section-header {
+            margin-bottom: 1.75rem;
+        }
+        
+        .section-header h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 0.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-header p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .leave-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.75rem;
+            align-items: end;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        
+        .optional-badge {
+            font-size: 0.7rem;
+            background: var(--gradient-4);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Statistics */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            padding: 1.75rem;
+            border-radius: 1.25rem;
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+        
+        .stat-card:nth-child(1) { background: var(--gradient-1); }
+        .stat-card:nth-child(2) { background: var(--gradient-2); }
+        .stat-card:nth-child(3) { background: var(--gradient-3); }
+        .stat-card:nth-child(4) { background: var(--gradient-4); }
+
+        .stat-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+        }
+
+        .stat-card p {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-top: 0.5rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Timetable */
+        .table-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            border-radius: 1.25rem;
+            overflow-x: auto;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 900px;
+        }
+
+        th {
+            background: rgba(248, 250, 252, 0.8);
+            color: var(--text-light);
+            padding: 1.2rem 1.5rem;
+            text-align: left;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+            font-size: 0.95rem;
+            vertical-align: top;
+            transition: background 0.2s;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(248, 250, 252, 0.8);
+        }
+
+        .subject {
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+        
+        .subject-group {
+            display: inline-block;
+            margin-top: 6px;
+            background: var(--gradient-2);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            box-shadow: 0 2px 4px rgba(236, 72, 153, 0.2);
+        }
+
+        .room {
+            background: var(--gradient-1);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+        }
+        
+        .time-badge {
+            display: inline-block;
+            margin-top: 6px;
+            color: var(--text-main);
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: #f1f5f9;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 5rem;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2.5rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            font-weight: 500;
+        }
+        
+        .developer-name {
+            color: var(--primary);
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.25rem;
+                padding: 1.25rem;
+            }
+            
+            .college-name {
+                font-size: 1.2rem;
+            }
+
+            .container {
+                padding: 1.25rem;
+            }
+
+            .title h1 {
+                font-size: 1.75rem;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    
+    <!-- PDF Export & Flatpickr Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+    <div class="college-header">
+
+        <img
+            src="college-logo.jpg"
+            alt="Government Engineering College Madhubani Logo"
+            class="college-logo"
+        >
+
+        <div>
+            <div class="college-name">
+                Government Engineering College Madhubani
+            </div>
+
+            <div class="system-name">
+                Intelligent Timetable Management System
+            </div>
+        </div>
+
+    </div>
+
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="status">
+                ● System Online
+            </div>
+            <button onclick="window.location.href='index.html'" class="btn-secondary" style="padding: 0.5rem 1rem; border-color: #ef4444; color: #ef4444;">
+                Logout
+            </button>
+        </div>
+    </header>
+
+
+    <!-- Main Dashboard -->
+    <main class="container">
+
+        <div class="top-section">
+
+            <div class="controls">
+
+                <select id="branch" onchange="updateSectionVisibility()">
+    <option value="Electrical">Electrical Engineering</option>
+    <option value="CSE">Computer Science & Engineering</option>
+    <option value="IoT">Internet of Things</option>
+    <option value="Mechanical">Mechanical Engineering</option>
+    <option value="Civil">Civil Engineering</option>
+</select>
+
+<select id="section" style="display: none;">
+    <option value="A">Section A</option>
+    <option value="B">Section B</option>
+</select>
+
+<select id="semester">
+    <option value="4">Semester 4</option>
+    <option value="5">Semester 5</option>
+    <option value="3">Semester 3</option>
+</select>
+
+<div style="display: flex; gap: 5px;">
+    <input type="text" id="timetableDateFilter" placeholder="Filter by Date..." style="padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.95rem; background: rgba(255, 255, 255, 0.8);">
+    <button onclick="clearDateFilter()" class="btn-secondary" style="padding: 0 10px; font-size: 1rem; border-color: var(--border); color: #64748b;" title="Clear Date Filter">❌</button>
+</div>
+
+                <button onclick="loadTimetable()" class="btn-secondary">
+                    🔄 Refresh
+                </button>
+
+                <button onclick="generateTimetable()" class="btn-primary">
+                    ⚡ Auto Generate
+                </button>
+                
+                <button onclick="exportToPDF()" class="btn-danger">
+                    📄 Export to PDF
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- Faculty Leave & Substitute -->
+        <section class="leave-section glass-card">
+
+    <div class="section-header">
+        <h2>👨‍🏫 Faculty Leave Management</h2>
+        <p>
+            Select faculty, leave date, class period and preferred substitute faculty.
+        </p>
+    </div>
+
+    <div class="leave-form">
+
+        <!-- Faculty Taking Leave -->
+        <div class="input-group">
+            <label for="leaveFaculty">
+                Faculty Taking Leave
+            </label>
+            <select id="leaveFaculty" onchange="updateLeaveTimeSlots()">
+                <option value="">Select Faculty</option>
+            </select>
+        </div>
+
+        <!-- Leave Date -->
+        <div class="input-group">
+            <label for="leaveDate">
+                Leave Date
+            </label>
+            <input type="text" id="leaveDate" placeholder="Select Date...">
+        </div>
+
+        <!-- Class / Period -->
+        <div class="input-group">
+            <label for="leaveTimeSlot">
+                Class / Period
+            </label>
+            <select id="leaveTimeSlot">
+                <option value="">
+                    Select Class / Period
+                </option>
+            </select>
+        </div>
+
+
+        <!-- Substitute Faculty -->
+        <div class="input-group">
+            <label for="substituteFaculty">
+                Substitute Faculty <span class="optional-badge">Optional</span>
+            </label>
+
+            <select id="substituteFaculty">
+                <option value="">
+                    Auto-assign Substitute
+                </option>
+            </select>
+        </div>
+
+        <!-- Submit -->
+        <div class="input-group" style="justify-content: flex-end;">
+            <button onclick="submitLeaveRequest()" class="btn-primary" style="height: 42px;">
+                📩 Submit Request
+            </button>
+        </div>
+
+    </div>
+
+    <div id="substituteResults"></div>
+
+</section>
+        <!-- Statistics -->
+        <section class="stats">
+
+            <div class="stat-card">
+                <h3>Total Classes</h3>
+                <p id="totalClasses">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Faculty Assigned</h3>
+                <p id="facultyCount">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Rooms Used</h3>
+                <p id="roomCount">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Time Slots</h3>
+                <p id="slotCount">0</p>
+            </div>
+
+        </section>
+
+
+        <!-- Timetable -->
+        <section class="table-container">
+
+            <div id="timetableContainer" style="width: 100%; overflow-x: auto;">
+                <p class="loading" style="text-align: center; padding: 20px;">Loading timetable...</p>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+    Government Engineering College Madhubani © 2026 |
+    Smart Timetable Management System
+    <br>
+    <small>Web Developed by <span class="developer-name">Yash Kumar Jha</span></small>
+</footer>
+
+
+    <script>
+
+        const API_URL = "http://127.0.0.1:5000/api/timetable";
+        const TIME_SLOTS = {
+    Monday: {
+        1: "10:00 AM – 11:00 AM",
+        2: "11:00 AM – 12:00 PM",
+        3: "12:00 PM – 1:00 PM",
+        4: "2:00 PM – 3:00 PM",
+        5: "3:00 PM – 4:00 PM",
+        6: "4:00 PM – 5:00 PM"
+    },
+    Tuesday: {
+        1: "10:00 AM – 11:00 AM",
+        2: "11:00 AM – 12:00 PM",
+        3: "12:00 PM – 1:00 PM",
+        4: "2:00 PM – 3:00 PM",
+        5: "3:00 PM – 4:00 PM",
+        6: "4:00 PM – 5:00 PM"
+    },
+    Wednesday: {
+        1: "10:00 AM – 11:00 AM",
+        2: "11:00 AM – 12:00 PM",
+        3: "12:00 PM – 1:00 PM",
+        4: "2:00 PM – 3:00 PM",
+        5: "3:00 PM – 4:00 PM",
+        6: "4:00 PM – 5:00 PM"
+    },
+    Thursday: {
+        1: "10:00 AM – 11:00 AM",
+        2: "11:00 AM – 12:00 PM",
+        3: "12:00 PM – 1:00 PM",
+        4: "2:00 PM – 3:00 PM",
+        5: "3:00 PM – 4:00 PM",
+        6: "4:00 PM – 5:00 PM"
+    },
+    Friday: {
+        1: "10:00 AM – 11:00 AM",
+        2: "11:00 AM – 12:00 PM",
+        3: "12:00 PM – 1:00 PM",
+        4: "2:00 PM – 3:00 PM",
+        5: "3:00 PM – 4:00 PM",
+        6: "4:00 PM – 5:00 PM"
+    },
+    Saturday: {
+        1: "10:00 AM – 11:00 AM",
+        2: "11:00 AM – 12:00 PM",
+        3: "12:00 PM – 1:00 PM",
+        4: "2:00 PM – 3:00 PM",
+        5: "3:00 PM – 4:00 PM",
+        6: "4:00 PM – 5:00 PM"
+    }
+};
+function updateSectionVisibility() {
+
+    const branch = document.getElementById('branch').value;
+    const section = document.getElementById('section');
+
+    if (branch === 'Civil') {
+        section.style.display = 'block';
+    } else {
+        section.style.display = 'none';
+    }
+    
+    // Reset leave form
+    document.getElementById("leaveDate").value = "";
+    const slotSelect = document.getElementById("leaveTimeSlot");
+    if(slotSelect) slotSelect.innerHTML = `<option value="">Select Time Slot</option>`;
+    
+    const subSelect = document.getElementById("substituteFaculty");
+    if(subSelect) subSelect.innerHTML = `<option value="">Auto-assign Substitute (Optional)</option>`;
+
+    // Also update the faculty list for the new branch
+    loadLeaveFaculty();
+}
+async function updateLeaveTimeSlots() {
+    const dateInput = document.getElementById("leaveDate");
+    const slotSelect = document.getElementById("leaveTimeSlot");
+    const facultyId = document.getElementById("leaveFaculty").value;
+
+    slotSelect.innerHTML = `<option value="">Select Time Slot</option>`;
+
+    if (!dateInput.value || !facultyId) {
+        return;
+    }
+
+    const selectedDate = new Date(dateInput.value + "T00:00:00");
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const dayName = days[selectedDate.getDay()];
+
+    const slots = TIME_SLOTS[dayName];
+    if (!slots) {
+        slotSelect.innerHTML = `<option value="">No classes on Sunday</option>`;
+        return;
+    }
+
+    try {
+        const response = await fetch("http://127.0.0.1:5000/api/timetable/faculty/" + facultyId);
+        const facultyClasses = await response.json();
+        
+        const currentBranch = document.getElementById("branch").value;
+        const currentSemester = document.getElementById("semester").value;
+
+        const classesOnSelectedDay = facultyClasses.filter(c => 
+            c.timeSlotId && 
+            c.timeSlotId.day === dayName &&
+            c.branch === currentBranch &&
+            c.semester == currentSemester
+        );
+
+        if (classesOnSelectedDay.length === 0) {
+            slotSelect.innerHTML = `<option value="">No classes assigned on this day</option>`;
+            return;
+        }
+
+        classesOnSelectedDay.forEach(c => {
+            const slotNumber = c.timeSlotId.slotNumber;
+            const time = slots[slotNumber];
+            const option = document.createElement("option");
+            option.value = `${dayName}-${slotNumber}`;
+            option.textContent = `${c.subjectName} - Period ${slotNumber} (${time})`;
+            slotSelect.appendChild(option);
+        });
+
+    } catch (err) {
+        console.error(err);
+        slotSelect.innerHTML = `<option value="">Error loading classes</option>`;
+    }
+
+    // Hide selected faculty in substitute list completely
+    const substituteSelect = document.getElementById("substituteFaculty");
+    Array.from(substituteSelect.options).forEach(opt => {
+        if (opt.value === "") return; // keep the default option visible
+        if (opt.value === facultyId && facultyId !== "") {
+            opt.style.display = "none";
+        } else {
+            opt.style.display = "block";
+        }
+    });
+    
+    if (substituteSelect.value === facultyId) {
+        substituteSelect.value = "";
+    }
+}
+
+
+
+// 👇 PASTE THE NEW FUNCTION HERE
+async function loadLeaveFaculty() {
+
+    const facultySelect = document.getElementById("leaveFaculty");
+    const substituteSelect = document.getElementById("substituteFaculty");
+
+    try {
+
+        const response = await fetch("http://127.0.0.1:5000/api/faculty");
+        const facultyList = await response.json();
+
+        // Get currently selected branch
+        const branchSelect = document.getElementById("branch");
+        const selectedBranch = branchSelect ? branchSelect.value : "Electrical";
+
+        // Filter faculty by branch
+        const filteredFaculty = facultyList.filter(f => f.department && f.department.includes(selectedBranch));
+
+        facultySelect.innerHTML = `<option value="">Select Faculty</option>`;
+        substituteSelect.innerHTML = `<option value="">Auto-assign Substitute (Optional)</option>`;
+
+        filteredFaculty.forEach(function (faculty) {
+
+            // For leave faculty
+            const option1 = document.createElement("option");
+            option1.value = faculty._id;
+            option1.textContent = faculty.name;
+            facultySelect.appendChild(option1);
+
+            // For substitute faculty
+            const option2 = document.createElement("option");
+            option2.value = faculty._id;
+            option2.textContent = faculty.name;
+            substituteSelect.appendChild(option2);
+
+        });
+
+    } catch (error) {
+
+        console.error("Error loading faculty:", error);
+
+    }
+}
+        // Load timetable from backend
+        async function loadTimetable() {
+
+            const container = document.getElementById("timetableContainer");
+
+            container.innerHTML = `
+                <p class="loading" style="text-align: center; padding: 20px;">
+                    Loading timetable...
+                </p>
+            `;
+
+            try {
+
+                const response = await fetch(`${API_URL}?branch=${encodeURIComponent(document.getElementById("branch").value)}&section=${encodeURIComponent(document.getElementById("section").value)}&semester=${encodeURIComponent(document.getElementById("semester").value)}`);
+
+                if (!response.ok) {
+                    throw new Error("Server response error");
+                }
+
+                let data = await response.json();
+                
+                // Store globally for PDF Export
+                window.currentTimetableData = data;
+                
+                // Filter by date if selected
+                const dateFilter = document.getElementById("timetableDateFilter").value;
+                if (dateFilter) {
+                    const selectedDate = new Date(dateFilter + "T00:00:00");
+                    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                    const dayName = days[selectedDate.getDay()];
+                    
+                    data = data.filter(item => item.timeSlotId?.day === dayName || item.day === dayName);
+                }
+
+                displayTimetable(data);
+
+            } catch (error) {
+
+                console.error(error);
+
+                container.innerHTML = `
+                    <p class="loading" style="text-align: center; padding: 20px; color: red;">
+                        ⚠️ Unable to connect to backend.<br><br>
+                        Make sure the backend server is running on port 5000.
+                    </p>
+                `;
+
+            }
+
+        }
+
+
+        // Display timetable as 2D Grid
+        function displayTimetable(data) {
+            const container = document.getElementById("timetableContainer");
+
+            document.getElementById("totalClasses").textContent = data.length;
+
+            const faculties = new Set();
+            const rooms = new Set();
+            const slots = new Set();
+
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <p class="loading" style="text-align: center; padding: 20px;">
+                        No timetable data available.<br><br>
+                        Click <b>⚡ Auto Generate</b> after the backend generation API is ready.
+                    </p>
+                `;
+                document.getElementById("facultyCount").textContent = "0";
+                document.getElementById("roomCount").textContent = "0";
+                document.getElementById("slotCount").textContent = "0";
+                return;
+            }
+
+            // Stats parsing
+            data.forEach(item => {
+                if (item.facultyId?.name && item.branch === document.getElementById("branch").value) {
+                    faculties.add(item.facultyId.name);
+                }
+                if (item.roomId?.roomNo) rooms.add(item.roomId.roomNo);
+                if (item.timeSlotId) slots.add(item.timeSlotId._id || item.timeSlotId);
+            });
+
+            document.getElementById("facultyCount").textContent = faculties.size;
+            document.getElementById("roomCount").textContent = rooms.size;
+            document.getElementById("slotCount").textContent = slots.size;
+
+            // 2D Matrix Logic
+            const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const matrix = {};
+            days.forEach(d => {
+                matrix[d] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+            });
+
+            data.forEach(c => {
+                const day = c.timeSlotId?.day || c.day;
+                const slot = c.timeSlotId?.slotNumber || c.slotNumber || c.timeSlotId;
+                if (matrix[day] && matrix[day][slot]) {
+                    matrix[day][slot].push(c);
+                }
+            });
+
+            const getInitials = (name) => {
+                if (!name) return "";
+                if (name.includes("(")) return name.split("(")[1].split(")")[0];
+                return name.split(" ").map(n => n[0]).join("").toUpperCase();
+            };
+
+            const subjMap = {
+                "Electrical Machine-II": "EM-II",
+                "Signals and Systems": "SS",
+                "Digital Electronics": "DE",
+                "Electromagnetic field theory": "EFT",
+                "Environmental Science": "ES",
+                "Cyber Security": "CS",
+                "Project Management": "PM"
+            };
+
+            const colors = {
+                "EM-II": "#dbeafe", "SS": "#dcfce7", "DE": "#fef08a", 
+                "EFT": "#fce7f3", "ES": "#e9d5ff", "CS": "#cffafe",
+                "Library Period": "#fee2e2", "PM": "#ffedd5"
+            };
+
+            const getAbbr = (subj) => subjMap[subj] || subj;
+            const getColor = (subj) => {
+                const abbr = getAbbr(subj);
+                for (let k in colors) {
+                    if (abbr.includes(k)) return colors[k];
+                }
+                return "#f8fafc"; // default free/empty
+            };
+
+            // Filter days if date filter is active
+            const dateFilter = document.getElementById("timetableDateFilter").value;
+            let displayDays = days;
+            if (dateFilter) {
+                const selectedDate = new Date(dateFilter + "T00:00:00");
+                const allDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                const dayName = allDays[selectedDate.getDay()];
+                if (days.includes(dayName)) {
+                    displayDays = [dayName];
+                } else {
+                    displayDays = []; // Sunday
+                }
+            }
+
+            let html = `
+            <div style="width: 100%; overflow-x: auto; border-radius: 12px;">
+            <table class="timetable-premium">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>1st<br><small>10:00-11:00</small></th>
+                        <th>2nd<br><small>11:00-12:00</small></th>
+                        <th>3rd<br><small>12:00-1:00</small></th>
+                        <th>Recess<br><small>1:00-2:00</small></th>
+                        <th>4th<br><small>2:00-3:00</small></th>
+                        <th>5th<br><small>3:00-4:00</small></th>
+                        <th>6th<br><small>4:00-5:00</small></th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            if (displayDays.length === 0) {
+                html += `<tr><td colspan="8" style="padding: 20px;">No classes on selected day.</td></tr>`;
+            }
+
+            displayDays.forEach((day, dayIndex) => {
+                html += `<tr>`;
+                html += `<td class="day-cell">${day.substring(0,3)}</td>`;
+                
+                for (let period = 1; period <= 6; period++) {
+                    let skip = false;
+                    const prevClasses = period > 1 ? matrix[day][period-1] : [];
+                    if (prevClasses.some(c => c.duration === 2) && (period === 2 || period === 3 || period === 5 || period === 6)) {
+                        continue; 
+                    }
+
+                    const classes = matrix[day][period];
+                    let cellContent = "";
+                    let colspan = 1;
+                    let bgColor = "#ffffff";
+
+                    if (classes.length === 0) {
+                        cellContent = "<span style='color: #94a3b8; font-weight: 500;'>Free</span>";
+                    } else if (classes.length === 1) {
+                        const c = classes[0];
+                        if (c.subjectName === "Library Period") {
+                            cellContent = "<div class='subject-cell'><strong>Library Period</strong></div>";
+                            colspan = 2;
+                        } else {
+                            const facName = c.facultyId?.name || "";
+                            cellContent = `<div class='subject-cell' style='background-color:${getColor(c.subjectName)}'>
+                                <strong>${getAbbr(c.subjectName)}</strong>
+                                <span class='sub-badge'>${getInitials(facName)}</span>`;
+                            if (c.roomId?.roomNo) cellContent += `<small style="margin-top:6px; color:#475569; font-weight:700;">${c.roomId.roomNo}</small>`;
+                            cellContent += `</div>`;
+                            if (c.duration === 2) colspan = 2;
+                        }
+                    } else {
+                        cellContent = `<div style="display:flex; flex-direction:column; gap: 8px;">`;
+                        classes.forEach((c) => {
+                            const facName = c.facultyId?.name || "";
+                            cellContent += `<div class='subject-cell' style='background-color:${getColor(c.subjectName)}'>
+                                <strong>${getAbbr(c.subjectName)} ${c.group||''}</strong>
+                                <span class='sub-badge'>${getInitials(facName)}</span>`;
+                            if (c.roomId?.roomNo) cellContent += `<small style="margin-top:6px; color:#475569; font-weight:700;">${c.roomId.roomNo}</small>`;
+                            cellContent += `</div>`;
+                        });
+                        cellContent += `</div>`;
+                        if (classes.some(c => c.duration === 2)) colspan = 2;
+                    }
+
+                    html += `<td colspan="${colspan}">${cellContent}</td>`;
+                    
+                    if (period === 3 && dayIndex === 0) {
+                        html += `<td rowspan="${displayDays.length}" class="recess-cell">R<br>E<br>C<br>E<br>S<br>S</td>`;
+                    }
+                }
+                html += `</tr>`;
+            });
+
+            html += `</tbody></table></div>`;
+            container.innerHTML = html;
+        }
+
+
+        // Auto generate timetable
+        async function generateTimetable() {
+
+            const button = event.target;
+
+            button.disabled = true;
+            button.textContent = "Generating...";
+
+            try {
+
+                const response = await fetch(API_URL + "/generate", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+    branch: document.getElementById("branch").value,
+    section: document.getElementById("section").value,
+    semester: Number(
+        document.getElementById("semester").value
+    )
+})
+
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || result.message);
+                }
+
+                alert("Timetable generated successfully!");
+
+                loadTimetable();
+
+            } catch (error) {
+
+                alert(
+                    "Generation API is not ready yet.\n\n" +
+                    error.message
+                );
+
+            }
+
+            button.disabled = false;
+            button.textContent = "⚡ Auto Generate";
+
+        }
+
+
+        // Load timetable when page opens
+        loadTimetable();
+        
+        // Load faculty list for leave requests
+        loadLeaveFaculty();
+        
+// Check faculty leave and find substitute
+async function submitLeaveRequest() {
+
+    const facultyId = document.getElementById("leaveFaculty").value;
+    const leaveDate = document.getElementById("leaveDate").value;
+    const timeSlotId = document.getElementById("leaveTimeSlot").value;
+    const substituteFacultyId = document.getElementById("substituteFaculty").value;
+    const resultBox = document.getElementById("substituteResults");
+
+    if (!facultyId || !leaveDate || !timeSlotId || !substituteFacultyId) {
+        alert("Please select faculty, leave date, class/period and substitute faculty.");
+        return;
+    }
+
+    const loadingId = "loading-" + Date.now();
+    resultBox.insertAdjacentHTML("afterbegin", `<p id="${loadingId}">🔄 Submitting leave request...</p>`);
+
+    try {
+        const response = await fetch(
+            "http://127.0.0.1:5000/api/faculty/leave-request",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    facultyId: facultyId,
+                    leaveDate: leaveDate,
+                    timeSlotId: timeSlotId,
+                    substituteFacultyId: substituteFacultyId
+                })
+            }
+        );
+
+        const result = await response.json();
+        document.getElementById(loadingId).remove();
+
+        if (!response.ok) {
+            throw new Error(result.message || result.error);
+        }
+
+        resultBox.insertAdjacentHTML("afterbegin", `
+            <div style="
+                padding:15px;
+                margin-bottom:15px;
+                border-left:4px solid #10b981;
+                background-color:#f8fafc;
+                border-radius:8px;
+                box-shadow:0 1px 3px rgba(0,0,0,0.1);
+            ">
+                ✅ <strong>Leave Request Submitted Successfully!</strong>
+                <br><br>
+                Faculty on Leave: <strong>${result.facultyOnLeave}</strong>
+                <br>
+                Leave Date: ${leaveDate}
+                <br>
+                Substitute Faculty: <strong>${result.substituteName || "Selected Faculty"}</strong>
+            </div>
+        `);
+        
+        loadTimetable();
+        loadStats();
+        
+        setTimeout(() => {
+            document.getElementById("timetableContainer").scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 500);
+
+    } catch (error) {
+        const loader = document.getElementById(loadingId);
+        if(loader) loader.remove();
+        
+        resultBox.insertAdjacentHTML("afterbegin", `
+            <div style="
+                padding:15px;
+                margin-bottom:15px;
+                border-left:4px solid #ef4444;
+                background-color:#fef2f2;
+                border-radius:8px;
+            ">
+                ❌ <strong>Leave request failed:</strong><br>
+                ${error.message}
+            </div>
+        `);
+    }
+}
+        
+        // Export Timetable to PDF for WhatsApp
+        function exportToPDF() {
+            if (!window.currentTimetableData || window.currentTimetableData.length === 0) {
+                return alert("Nothing to export yet!");
+            }
+
+            const branch = document.getElementById("branch").options[document.getElementById("branch").selectedIndex].text;
+            const semester = document.getElementById("semester").options[document.getElementById("semester").selectedIndex].text;
+            
+            // Build 2D matrix
+            const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const matrix = {};
+            days.forEach(d => matrix[d] = {1:[], 2:[], 3:[], 4:[], 5:[], 6:[]});
+            
+            window.currentTimetableData.forEach(item => {
+                const day = item.timeSlotId?.day || item.day;
+                const slot = item.timeSlotId?.slotNumber || item.slotNumber;
+                if (matrix[day] && matrix[day][slot]) {
+                    matrix[day][slot].push(item);
+                }
+            });
+
+            // Get initials (e.g., Dr. Pritam Kumar -> PK)
+            const getInitials = (name) => {
+                if (!name) return "";
+                if (name.includes("(")) {
+                    return name.split("(")[1].split(")")[0];
+                }
+                const parts = name.replace('Dr. ', '').split(' ');
+                if (parts.length > 1) return parts[0][0] + parts[parts.length-1][0];
+                return parts[0].substring(0, 2);
+            };
+
+            // Maps for subjects
+            const subjMap = {
+                "Electrical Machine-II": "EM-II",
+                "Signals and Systems": "SS",
+                "Digital Electronics": "DE",
+                "Electromagnetic Field Theory": "EFT",
+                "Environmental Science": "ES",
+                "Control System": "CS",
+                "Project Management": "PM"
+            };
+
+            const colors = {
+                "EM-II": "#dbeafe", "SS": "#dcfce7", "DE": "#fef08a", 
+                "EFT": "#fce7f3", "ES": "#e9d5ff", "CS": "#cffafe",
+                "Library Period": "#fee2e2", "PM": "#ffedd5"
+            };
+
+            const getAbbr = (subj) => subjMap[subj] || subj;
+            const getColor = (subj) => {
+                const abbr = getAbbr(subj);
+                for (let k in colors) {
+                    if (abbr.includes(k)) return colors[k];
+                }
+                return "#ffffff"; // default free/empty
+            };
+
+            // Dynamic current date (DD-MM-YYYY)
+            const today = new Date();
+            const dateStr = String(today.getDate()).padStart(2, '0') + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + today.getFullYear();
+
+            // Build HTML
+            let html = `
+            <div id="pdfExportWrapper" style="width: 1100px; padding: 20px; font-family: Arial, sans-serif; background: white;">
+                <h1 style="text-align: center; color: #002b5e; font-size: 28px; margin-bottom: 5px; text-transform: uppercase;">Government Engineering College Madhubani</h1>
+                <h2 style="text-align: center; font-size: 16px; margin-bottom: 20px;">B.Tech ${semester} ${branch} (2024 Batch) Time Table w.e.f. ${dateStr}</h2>
+                
+                <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 13px; font-weight: bold;">
+                    <thead>
+                        <tr>
+                            <th style="border: 2px solid black; padding: 10px; text-align: center; vertical-align: middle;">Period<br>Time<br>Day</th>
+                            <th style="border: 2px solid black; padding: 10px; text-align: center; vertical-align: middle;">1st<br>10:00-11:00</th>
+                            <th style="border: 2px solid black; padding: 10px; text-align: center; vertical-align: middle;">2nd<br>11:00-12:00</th>
+                            <th style="border: 2px solid black; padding: 10px; text-align: center; vertical-align: middle;">3rd<br>12:00-1:00</th>
+                            <th style="border: 2px solid black; padding: 10px; text-align: center; vertical-align: middle; width: 60px;">Recess<br>1:00-2:00</th>
+                            <th style="border: 2px solid black; padding: 10px; text-align: center; vertical-align: middle;">4th<br>2:00-3:00</th>
+                            <th style="border: 2px solid black; padding: 10px; text-align: center; vertical-align: middle;">5th<br>3:00-4:00</th>
+                            <th style="border: 2px solid black; padding: 10px; text-align: center; vertical-align: middle;">6th<br>4:00-5:00</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            days.forEach((day, dayIndex) => {
+                html += `<tr>`;
+                html += `<td style="border: 2px solid black; padding: 10px; background: #002b5e; color: white; text-align: center; vertical-align: middle;">${day.substring(0,3)}</td>`;
+                
+                for (let period = 1; period <= 6; period++) {
+                    let skip = false;
+                    const prevClasses = period > 1 ? matrix[day][period-1] : [];
+                    if (prevClasses.some(c => c.duration === 2) && (period === 2 || period === 3 || period === 5 || period === 6)) {
+                        continue; 
+                    }
+
+                    const classes = matrix[day][period];
+                    let cellContent = "";
+                    let colspan = 1;
+                    let bgColor = "#ffffff";
+
+                    if (classes.length === 0) {
+                        cellContent = "Free";
+                    } else if (classes.length === 1) {
+                        const c = classes[0];
+                        if (c.subjectName === "Library Period") {
+                            cellContent = "Library Period";
+                            colspan = 2;
+                        } else {
+                            const facName = c.facultyId?.name || "";
+                            cellContent = `${getAbbr(c.subjectName)} (${getInitials(facName)})`;
+                            if (c.duration === 2) colspan = 2;
+                        }
+                        bgColor = getColor(c.subjectName);
+                    } else {
+                        cellContent = `<div style="display:flex; flex-direction:column; width:100%; height:100%;">`;
+                        classes.forEach((c, idx) => {
+                            const facName = c.facultyId?.name || "";
+                            const borderBottom = idx < classes.length - 1 ? 'border-bottom: 2px solid black;' : '';
+                            cellContent += `<div style="flex:1; display:flex; align-items:center; justify-content:center; padding:5px; background:${getColor(c.subjectName)}; ${borderBottom}">${getAbbr(c.subjectName)} ${c.group||''} (${getInitials(facName)})</div>`;
+                        });
+                        cellContent += `</div>`;
+                        if (classes.some(c => c.duration === 2)) colspan = 2;
+                        bgColor = "transparent";
+                    }
+
+                    const paddingStr = bgColor === "transparent" ? "0" : "10px";
+                    html += `<td colspan="${colspan}" style="border: 2px solid black; padding: ${paddingStr}; background: ${bgColor}; text-align: center; vertical-align: middle;">${cellContent}</td>`;
+                    
+                    if (period === 3 && dayIndex === 0) {
+                        html += `<td rowspan="6" style="border: 2px solid black; background: #fffcf0; color: #991b1b; font-size: 26px; font-weight: 900; line-height: 1.5; text-align: center; vertical-align: middle;">R<br>E<br>C<br>E<br>S<br>S</td>`;
+                    }
+                }
+                html += `</tr>`;
+            });
+
+            html += `</tbody></table></div>`;
+
+            // Append to body temporarily
+            const wrapper = document.createElement("div");
+            wrapper.style.position = "absolute";
+            wrapper.style.left = "-9999px";
+            wrapper.innerHTML = html;
+            document.body.appendChild(wrapper);
+
+            const opt = {
+                margin:       0.2,
+                filename:     `Timetable_${branch}_${semester}.pdf`,
+                image:        { type: 'jpeg', quality: 1.0 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+            };
+
+            html2pdf().set(opt).from(wrapper.firstElementChild).save().then(() => {
+                document.body.removeChild(wrapper);
+            });
+        }
+
+        // Initialize Flatpickr for the leave date with future dates only
+        flatpickr("#leaveDate", {
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr, instance) {
+                // When date changes, update the time slots dynamically
+                updateLeaveTimeSlots();
+            }
+        });
+        
+        const fpDateFilter = flatpickr("#timetableDateFilter", {
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr, instance) {
+                loadTimetable();
+            }
+        });
+        
+        function clearDateFilter() {
+            fpDateFilter.clear();
+            loadTimetable();
+        }
+        
+        async function loadStats() {
+            try {
+                const branch = document.getElementById("branch").value;
+                const semester = document.getElementById("semester").value;
+                const response = await fetch(`http://127.0.0.1:5000/api/timetable/stats?branch=${branch}&semester=${semester}`);
+                const stats = await response.json();
+                if (response.ok) {
+                    document.getElementById("totalClasses").textContent = stats.totalClasses;
+                    document.getElementById("facultyCount").textContent = stats.facultyCount;
+                    document.getElementById("roomCount").textContent = stats.roomCount;
+                    document.getElementById("slotCount").textContent = stats.slotCount;
+                }
+            } catch (err) {
+                console.error("Failed to load stats:", err);
+            }
+        }
+
+        // Initialize dashboard
+        loadTimetable();
+        loadStats();
+
+    </script>
+
+</body>
+</html>
