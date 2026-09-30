@@ -3,76 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <meta
-        name="description"
-        content="Smart Timetable Management System for Government Engineering College Madhubani"
-    >
-
+    <meta name="description" content="Smart Timetable Management System for Government Engineering College Madhubani">
     <title>Smart Timetable Management System</title>
 
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #3b82f6;
+            --background: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: 'Inter', sans-serif;
         }
-.developer-name {
-    color: red !important;
-    font-weight: 900 !important;
-}
+
         body {
-            background: #f4f7fb;
-            color: #1f2937;
+            background: var(--background);
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(217,100%,76%,0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(253,100%,76%,0.15) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.5;
         }
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, #0f3d91, #1769d1);
-            color: white;
-            padding: 22px 35px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-.college-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
 
-.college-logo {
-    width: 58px;
-    height: 58px;
-    object-fit: contain;
-    background: white;
-    border-radius: 8px;
-    padding: 3px;
-}
+        .college-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .college-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
         .college-name {
-            font-size: 25px;
-            font-weight: bold;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.025em;
         }
 
         .system-name {
-            font-size: 14px;
-            margin-top: 6px;
-            opacity: 0.9;
+            font-size: 0.875rem;
+            color: var(--primary);
+            font-weight: 500;
         }
 
         .status {
-            background: #16a34a;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
-        /* Main */
+        .status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        /* Main Container */
         .container {
-            padding: 30px;
+            padding: 2rem;
             max-width: 1400px;
             margin: auto;
         }
@@ -80,158 +118,312 @@
         .top-section {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            gap: 20px;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            gap: 1.5rem;
+            flex-wrap: wrap;
         }
 
         .title h1 {
-            font-size: 28px;
-            color: #111827;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.025em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .title p {
-            margin-top: 7px;
-            color: #6b7280;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+            font-size: 1rem;
         }
 
         .controls {
             display: flex;
-            gap: 10px;
+            gap: 0.75rem;
             flex-wrap: wrap;
         }
 
-        select,
-        button {
-            padding: 11px 15px;
-            border-radius: 7px;
-            border: 1px solid #d1d5db;
+        select, input[type="date"], input[type="text"] {
+            padding: 0.625rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
             background: white;
-            font-size: 14px;
+            font-size: 0.875rem;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         button {
-            background: #1769d1;
-            color: white;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
             border: none;
+            font-size: 0.875rem;
+            font-weight: 600;
             cursor: pointer;
-            font-weight: bold;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
 
-        button:hover {
-            background: #0f3d91;
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+        }
+        
+        .btn-danger {
+            background: #fff0f2;
+            color: var(--danger);
+            border: 1px solid #ffe4e6;
+        }
+        
+        .btn-danger:hover {
+            background: #ffe4e6;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Leave Section */
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .section-header p {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .leave-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            align-items: end;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        
+        .optional-badge {
+            font-size: 0.7rem;
+            background: #e2e8f0;
+            color: var(--text-light);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+            font-weight: 500;
         }
 
         /* Statistics */
         .stats {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .stat-card {
             background: white;
-            padding: 22px;
-            border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-            border-left: 5px solid #1769d1;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--primary);
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
         }
 
         .stat-card h3 {
-            font-size: 14px;
-            color: #6b7280;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
         }
 
         .stat-card p {
-            font-size: 28px;
-            font-weight: bold;
-            margin-top: 8px;
-            color: #1769d1;
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-top: 0.5rem;
+            color: var(--text-main);
         }
 
         /* Timetable */
         .table-container {
             background: white;
-            border-radius: 12px;
+            border-radius: 1rem;
             overflow-x: auto;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             min-width: 900px;
         }
 
         th {
-            background: #0f3d91;
-            color: white;
-            padding: 15px;
+            background: #f8fafc;
+            color: var(--text-light);
+            padding: 1rem 1.5rem;
             text-align: left;
-            font-size: 14px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
         }
 
         td {
-            padding: 15px;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 14px;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+            vertical-align: top;
         }
 
-        tr:hover {
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
             background: #f8fafc;
         }
 
         .subject {
-            color: #1769d1;
-            font-weight: bold;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .subject-group {
+            display: inline-block;
+            margin-top: 4px;
+            background: #fef2f2;
+            color: var(--danger);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
         }
 
         .room {
-            background: #e0f2fe;
-            color: #0369a1;
-            padding: 5px 9px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: bold;
+            background: #eff6ff;
+            color: var(--primary-dark);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.025em;
+        }
+        
+        .time-badge {
+            display: inline-block;
+            margin-top: 4px;
+            color: var(--text-light);
+            font-size: 0.75rem;
         }
 
         .loading {
             text-align: center;
-            padding: 40px;
-            color: #6b7280;
+            padding: 4rem;
+            color: var(--text-light);
+            font-weight: 500;
         }
 
         /* Footer */
         footer {
             text-align: center;
-            padding: 25px;
-            color: #6b7280;
-            font-size: 13px;
+            padding: 2rem;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+        
+        .developer-name {
+            color: var(--primary);
+            font-weight: 700;
         }
 
-        /* Mobile */
-        @media (max-width: 800px) {
+        /* Responsive */
+        @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 12px;
+                gap: 1rem;
             }
-
-            .top-section {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
+            
+            .college-name {
+                font-size: 1.1rem;
             }
 
             .container {
-                padding: 18px;
+                padding: 1rem;
+            }
+
+            .title h1 {
+                font-size: 1.5rem;
             }
         }
     </style>
+    
+    <!-- PDF Export & Flatpickr Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 
 <body>
@@ -295,12 +487,16 @@
     <option value="3">Semester 3</option>
 </select>
 
-                <button onclick="loadTimetable()">
+                <button onclick="loadTimetable()" class="btn-secondary">
                     🔄 Refresh
                 </button>
 
-                <button onclick="generateTimetable()">
+                <button onclick="generateTimetable()" class="btn-primary">
                     ⚡ Auto Generate
+                </button>
+                
+                <button onclick="exportToPDF()" class="btn-danger">
+                    📄 Export to PDF
                 </button>
 
             </div>
@@ -308,7 +504,7 @@
         </div>
 
         <!-- Faculty Leave & Substitute -->
-        <section class="leave-section">
+        <section class="leave-section glass-card">
 
     <div class="section-header">
         <h2>👨‍🏫 Faculty Leave Management</h2>
@@ -330,20 +526,22 @@
 
 
         <!-- Leave Date -->
-        <label for="leaveDate">
-            Leave Date
-        </label>
-
-        <input
-            type="date"
-            id="leaveDate"
-        >
-
+        <div class="input-group">
+            <label for="leaveDate">
+                Leave Date
+            </label>
+            <input
+                type="text"
+                id="leaveDate"
+                placeholder="Select Date..."
+            >
+        </div>
 
         <!-- Class / Period -->
-        <label for="leaveTimeSlot">
-            Class / Period
-        </label>
+        <div class="input-group">
+            <label for="leaveTimeSlot">
+                Class / Period
+            </label>
 
         <select id="leaveTimeSlot">
             <option value="">
@@ -353,21 +551,24 @@
 
 
         <!-- Substitute Faculty -->
-        <label for="substituteFaculty">
-            Substitute Faculty
-        </label>
+        <div class="input-group">
+            <label for="substituteFaculty">
+                Substitute Faculty <span class="optional-badge">Optional</span>
+            </label>
 
-        <select id="substituteFaculty">
-            <option value="">
-                Select Substitute Faculty
-            </option>
-        </select>
-
+            <select id="substituteFaculty">
+                <option value="">
+                    Auto-assign Substitute
+                </option>
+            </select>
+        </div>
 
         <!-- Submit -->
-        <button onclick="submitLeaveRequest()">
-            📩 Submit Leave Request
-        </button>
+        <div class="input-group" style="justify-content: flex-end;">
+            <button onclick="submitLeaveRequest()" class="btn-primary" style="height: 42px;">
+                📩 Submit Request
+            </button>
+        </div>
 
     </div>
 
@@ -683,7 +884,9 @@ async function loadLeaveFaculty() {
                         slots.add(item.timeSlotId._id || item.timeSlotId);
                     }
 const row = document.createElement("tr");
-const slotNumber = item.timeSlotId?.slotNumber;
+
+// Safe extraction of slotNumber ensuring it handles objects or direct numbers
+const slotNumber = item.timeSlotId?.slotNumber || item.slotNumber || item.timeSlotId;
 
 const slotTimes = {
     1: "10:00 AM – 11:00 AM",
@@ -714,22 +917,20 @@ if (item.group === "G1") {
     groupText = "Group 2";
 }
 
-// ❌ DELETE the second const slotNumber line here
-
 row.innerHTML = `
     <td>
         <strong>${item.timeSlotId?.day || "N/A"}</strong>
         <br>
-        Slot ${slotNumber || "N/A"}
+        <span class="time-badge">Slot ${slotNumber || "N/A"}</span>
         <br>
-        <small>${displayTime}</small>
+        <small class="time-badge">${displayTime}</small>
     </td>
 
                         <td class="subject">
     ${item.subjectName || "N/A"}
     ${
         groupText
-            ? `<br><span style="color:#dc2626; font-size:12px;">${groupText}</span>`
+            ? `<br><span class="subject-group">${groupText}</span>`
             : ""
     }
 </td>
@@ -919,6 +1120,39 @@ async function submitLeaveRequest() {
         `;
     }
 }
+        }
+        
+        // Export Timetable to PDF for WhatsApp
+        function exportToPDF() {
+            const tableContainer = document.querySelector('.table-container');
+            const branch = document.getElementById("branch").options[document.getElementById("branch").selectedIndex].text;
+            const semester = document.getElementById("semester").options[document.getElementById("semester").selectedIndex].text;
+            
+            const opt = {
+                margin:       0.5,
+                filename:     `Timetable_${branch}_${semester}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+            };
+
+            // Temporarily hide the loading message if there is one
+            const loadingCell = tableContainer.querySelector('.loading');
+            if (loadingCell) return alert("Nothing to export yet!");
+            
+            html2pdf().set(opt).from(tableContainer).save();
+        }
+
+        // Initialize Flatpickr for the leave date with future dates only
+        flatpickr("#leaveDate", {
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr, instance) {
+                // When date changes, update the time slots dynamically
+                updateLeaveTimeSlots();
+            }
+        });
+
     </script>
 
 </body>
