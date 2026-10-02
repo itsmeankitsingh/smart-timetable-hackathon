@@ -1610,4 +1610,182 @@ const availableSubstitutes =
             error: err.message
         });
     }
-});module.exports = router;
+});
+
+// ============================================
+// CUSTOM TIMETABLE GENERATION
+// ============================================
+router.post('/generate-custom', async (req, res) => {
+    try {
+        const { branch, semester, section, subjects, recessSlot } = req.body;
+
+        if (!branch || !semester || !subjects || subjects.length === 0) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        const recess = parseInt(recessSlot) || 3;
+
+        // Ensure faculties exist or create them
+        const facultyMap = {};
+        for (const sub of subjects) {
+            if (!sub.facultyName) continue;
+            let fac = await Faculty.findOne({ name: sub.facultyName });
+            if (!fac) {
+                fac = await Faculty.create({
+                    name: sub.facultyName,
+                    department: branch,
+                    expertiseSubjects: [sub.name]
+                });
+            }
+            facultyMap[sub.name] = fac._id;
+        }
+
+        // Delete existing timetable for this custom combo
+        await Timetable.deleteMany({ branch, semester: Number(semester), section });
+
+        // Ensure TimeSlots exist
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const timeSlotIds = [];
+        for (const day of days) {
+            for (let slotNumber = 1; slotNumber <= 6; slotNumber++) {
+                let slot = await TimeSlot.findOne({ day, slotNumber });
+                if (!slot) {
+                    slot = await TimeSlot.create({ day, slotNumber, startTime: "10:00 AM", endTime: "5:00 PM" }); // Simplified
+                }
+                timeSlotIds.push(slot);
+            }
+        }
+        
+        // Ensure dummy room exists
+        let dummyRoom = await Room.findOne({ roomNo: 'CUSTOM-101' });
+        if (!dummyRoom) {
+            dummyRoom = await Room.create({ roomNo: 'CUSTOM-101', capacity: 100, type: 'Lecture Hall' });
+        }
+
+        const newTimetable = [];
+
+        for (const day of days) {
+            // Track which subjects/faculties have been assigned today
+            const assignedToday = new Set();
+            
+            for (let slotNum = 1; slotNum <= 6; slotNum++) {
+                if (slotNum === recess) continue; // Recess time
+
+                // Find subjects not yet assigned today
+                let availableSubjects = subjects.filter(s => !assignedToday.has(s.name));
+                
+                if (availableSubjects.length === 0) {
+                    break; // No more subjects can be assigned today, remaining slots will be Free
+                }
+                
+                // Shuffle available subjects
+                availableSubjects.sort(() => 0.5 - Math.random());
+                
+                let sub = availableSubjects[0];
+                
+                // Prevent lab from crossing recess or day end
+                if (sub.isLab && (slotNum + 1 === recess || slotNum + 1 > 6)) {
+                    const nonLabSub = availableSubjects.find(s => !s.isLab);
+                    if (nonLabSub) {
+                        sub = nonLabSub;
+                    } else {
+                        continue; // Skip this slot, try next slot
+                    }
+                }
+                
+                // Mark as assigned today
+                assignedToday.add(sub.name);
+                
+                // Get slot document
+                const ts = timeSlotIds.find(s => s.day === day && s.slotNumber === slotNum);
+                
+                const entry = new Timetable({
+                    branch,
+                    semester: Number(semester),
+                    section: section || 'A',
+                    subjectName: sub.name,
+                    facultyId: facultyMap[sub.name] || null,
+                    roomId: dummyRoom._id,
+                    timeSlotId: ts._id,
+                    duration: sub.isLab ? 2 : 1
+                });
+
+                newTimetable.push(entry);
+                
+                // Skip next slot if lab
+                if (sub.isLab) slotNum++;
+            }
+        }
+
+        await Timetable.insertMany(newTimetable);
+
+        res.status(200).json({ message: "Custom timetable generated successfully!" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+// Save Bulk Edited Timetable
+router.post('/save-bulk', async (req, res) => {
+    try {
+        const { branch, semester, section, entries } = req.body;
+        
+        if (!branch || !semester || !section || !entries) {
+            return res.status(400).json({ error: "Missing parameters" });
+        }
+
+        // Delete existing for this scope
+        await Timetable.deleteMany({
+            branch: branch,
+            semester: semester,
+            section: section
+        });
+        
+        // Re-insert new entries
+        if (entries.length > 0) {
+            // Need to map entries back to mongoose IDs
+            // But frontend already sends populated timeSlotId object, we just need _id
+            const mappedEntries = [];
+            for (let e of entries) {
+                let resolvedFacultyId = e.facultyId._id || e.facultyId;
+                
+                // If they edited the name inline, e.facultyId.name is the new string
+                const facName = e.facultyId?.name || (typeof e.facultyId === 'string' ? e.facultyId : null);
+                
+                if (facName) {
+                    let fac = await Faculty.findOne({ name: facName });
+                    if (!fac) {
+                        fac = await Faculty.create({
+                            name: facName,
+                            email: `${facName.toLowerCase().replace(/\s+/g, '.')}@faculty.com`,
+                            password: "password123",
+                            department: branch,
+                            expertiseSubjects: [e.subjectName || e.subject]
+                        });
+                    }
+                    resolvedFacultyId = fac._id;
+                }
+                
+                mappedEntries.push({
+                    branch: branch,
+                    semester: semester,
+                    section: section,
+                    timeSlotId: e.timeSlotId._id || e.timeSlotId,
+                    facultyId: resolvedFacultyId,
+                    roomId: e.roomId._id || e.roomId,
+                    subjectName: e.subjectName || e.subject,
+                    duration: e.duration || 1
+                });
+            }
+            await Timetable.insertMany(mappedEntries);
+        }
+
+        res.status(200).json({ message: "Timetable saved successfully!" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+module.exports = router;

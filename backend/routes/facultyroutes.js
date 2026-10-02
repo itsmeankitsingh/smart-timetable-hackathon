@@ -9,7 +9,7 @@ const TimeSlot = require('../models/TimeSlot');
 // Faculty Leave Request & Auto-Substitute
 router.post('/leave-request', async (req, res) => {
 
-    const { facultyId, date, leaveDate, timeSlotId, substituteFacultyId } = req.body;
+    const { facultyId, date, leaveDate, timeSlotId, substituteFacultyId, substituteSubject } = req.body;
     const effectiveDate = date || leaveDate;
 
     try {
@@ -56,7 +56,7 @@ router.post('/leave-request', async (req, res) => {
         }
 
         // 5. Get the subject that needs a substitute
-        const requiredSubject = affectedClasses[0].subjectName;
+        let requiredSubject = affectedClasses[0].subjectName;
 
         // 6. Find faculty already busy in this time slot
         const busyFacultyIds = await Timetable
@@ -66,16 +66,12 @@ router.post('/leave-request', async (req, res) => {
         // 7. Find suitable substitute faculty
         const availableSubstitutes = await Faculty.find({
             department: leavingFaculty.department,
-
-            // Don't select the faculty who is on leave
             _id: {
                 $nin: [
                     ...busyFacultyIds,
                     facultyId
                 ]
             },
-
-            // Faculty must be able to teach this subject
             expertiseSubjects: requiredSubject
         });
 
@@ -101,6 +97,12 @@ router.post('/leave-request', async (req, res) => {
                 message: "Substitute faculty could not be resolved."
             });
         }
+        
+        // 9.5 Handle Subject Override
+        let finalSubject = requiredSubject;
+        if (substituteSubject && substituteSubject.trim() !== '') {
+            finalSubject = substituteSubject.trim();
+        }
 
         // 10. Create swap request and update timetable immediately
         const swapInvite = await SwapRequest.create({
@@ -111,8 +113,9 @@ router.post('/leave-request', async (req, res) => {
             leaveDate: effectiveDate
         });
 
-        // Actually swap the faculty in the timetable
+        // Actually swap the faculty and possibly subject in the timetable
         affectedClasses[0].facultyId = bestSubstitute._id;
+        affectedClasses[0].subjectName = finalSubject;
         await affectedClasses[0].save();
 
         // 11. Send response to frontend
@@ -123,6 +126,8 @@ router.post('/leave-request', async (req, res) => {
             facultyOnLeave: leavingFaculty.name,
 
             subject: requiredSubject,
+            
+            finalSubject: finalSubject,
 
             substituteName: bestSubstitute.name,
 
